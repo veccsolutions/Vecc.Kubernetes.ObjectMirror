@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: objectmirror
+spec:
+  selector:
+    matchLabels:
+      app: objectmirror
+  template:
+    metadata:
+      labels:
+        app: objectmirror
+    spec:
+      serviceAccountName: objectmirror
+      containers:
+      - name: objectmirror
+        image: objectmirror:1.0.0
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "1000m"
+          requests:
+            memory: "100Mi"
+            cpu: "25m"
