@@ -14,6 +14,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEFAULT_BUMP: patch
+        WITH_V: false
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up buildx
@@ -49,8 +57,8 @@ jobs:
         context: .
         file: src/Vecc.Kubernetes.ObjectMirror/Dockerfile
         labels: ${{ steps.meta.outputs.labels }}
-        platforms: linux/amd64,linux/arm64
-        push: true
+        platforms: linux/amd64 #,linux/arm64
+        push: false
         #${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         
