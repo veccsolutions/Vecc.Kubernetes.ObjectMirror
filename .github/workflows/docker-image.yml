@@ -64,10 +64,18 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       with:
         script: |
-          sed -i -r 's@objectmirror:.*@objectmirror:2.2.2@' deployment.yaml
+          echo "Replacing version"
+          sed -i -r 's@objectmirror:.*@objectmirror:${{ steps.bumper.outputs.new_tag }}@' install/deployment.yaml
+          echo "Done"
+          
+          echo "Setting git user details"
           git config --global --add user.email edward@frakkingsweet.com
           git config --global --add user.name GitBot
+          echo "Done"
+          
+          echo "Adding and committing"
           git add -A
           git commit -m "[Skip] Version bump to ${{ steps.bumper.outputs.new_tag }}"
           git push origin
+          echo "Done"
         
