@@ -14,7 +14,7 @@ spec:
       serviceAccountName: objectmirror
       containers:
       - name: objectmirror
-        image: objectmirror:1.0.0
+        image: objectmirror:0.0.7
         resources:
           limits:
             memory: "300Mi"
