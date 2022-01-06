@@ -58,7 +58,6 @@ jobs:
         file: src/Vecc.Kubernetes.ObjectMirror/Dockerfile
         labels: ${{ steps.meta.outputs.labels }}
         platforms: linux/amd64 #,linux/arm64
-        push: false
-        #${{ github.event_name != 'pull_request' }}
+        push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         
