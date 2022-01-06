@@ -48,7 +48,7 @@ jobs:
           type=schedule
           type=ref,event=branch
           type=ref,event=pr
-          type=raw,value=${{ github.bumper.outputs.new_tag }}
+          type=raw,value=${{ steps.bumper.outputs.new_tag }}
           type=raw,value=latest,enable=${{ github.event_name != 'pull_request' }}
     - name: Build and push
       uses: docker/build-push-action@v2
