@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vecc-objectmirror
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vecc-objectmirror-allowed
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vecc-objectmirror-blocked

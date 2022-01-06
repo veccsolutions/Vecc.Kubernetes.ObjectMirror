@@ -132,26 +132,38 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Mirrors
 
             foreach (var space in namespaces)
             {
-                foreach (var allowedNamespace in target.AllowedNamespaces)
+                var blocked = false;
+                foreach (var blockedNamespace in (sharedSecret.Spec?.Target?.BlockedNamespaces ?? Enumerable.Empty<string>()))
                 {
-                    if (Regex.IsMatch(space, allowedNamespace))
+                    if (Regex.IsMatch(space ?? string.Empty, blockedNamespace))
                     {
-                        try
+                        _logger.LogDebug("{@namespace} is blocked for the shared secret {@sharedSecret}", space, $"{sharedSecret.Spec?.Source?.Namespace}/{sharedSecret.Spec?.Source?.Name}");
+                        blocked = true;
+                    }
+                }
+                if (!blocked)
+                {
+                    foreach (var allowedNamespace in target.AllowedNamespaces)
+                    {
+                        if (Regex.IsMatch(space, allowedNamespace))
                         {
-                            //not calling await on an async method schedules it on the task scheduler and lets it run to its end.
-                            CopySharedSecretToNamespaceAsync(secret, sharedSecret, space);
-                        }
-                        catch (HttpOperationException exception)
-                        {
-                            _logger.LogError(exception, "Unable to sync secret. {@source}", source);
-                            await Task.Delay(5000);
-                            _sharedData.SecretsToSync.Enqueue(dispatchedSharedSecret);
-                        }
-                        catch (Exception exception)
-                        {
-                            _logger.LogError(exception, "Unable to sync secret. {@source}", source);
-                            await Task.Delay(5000);
-                            _sharedData.SecretsToSync.Enqueue(dispatchedSharedSecret);
+                            try
+                            {
+                                //not calling await on an async method schedules it on the task scheduler and lets it run to its end.
+                                CopySharedSecretToNamespaceAsync(secret, sharedSecret, space);
+                            }
+                            catch (HttpOperationException exception)
+                            {
+                                _logger.LogError(exception, "Unable to sync secret. {@source}", source);
+                                await Task.Delay(5000);
+                                _sharedData.SecretsToSync.Enqueue(dispatchedSharedSecret);
+                            }
+                            catch (Exception exception)
+                            {
+                                _logger.LogError(exception, "Unable to sync secret. {@source}", source);
+                                await Task.Delay(5000);
+                                _sharedData.SecretsToSync.Enqueue(dispatchedSharedSecret);
+                            }
                         }
                     }
                 }
@@ -203,8 +215,16 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Mirrors
                         _logger.LogDebug("Already synced the secret, no need to re-check it.");
                         return;
                     }
-
-                    if (Regex.IsMatch(namespaceName, targetSpace))
+                    var blocked = false;
+                    foreach (var blockedNamespace in (sharedSecret.Spec?.Target?.BlockedNamespaces ?? Enumerable.Empty<string>()))
+                    {
+                        if (Regex.IsMatch(namespaceName, blockedNamespace))
+                        {
+                            _logger.LogDebug("{@namespace} is blocked for the shared secret {@sharedSecret}", namespaceName, $"{sharedSecret.Spec?.Source?.Namespace}/{sharedSecret.Spec?.Source?.Name}");
+                            blocked = true;
+                        }
+                    }
+                    if (!blocked && Regex.IsMatch(namespaceName, targetSpace))
                     {
                         V1Secret? secret = null;
                         try

@@ -54,7 +54,7 @@ spec:
                       type: array
                       items:
                         type: string
-                    disalowedNamespaces:
+                    blockedNamespaces:
                       type: array
                       items:
                         type: string

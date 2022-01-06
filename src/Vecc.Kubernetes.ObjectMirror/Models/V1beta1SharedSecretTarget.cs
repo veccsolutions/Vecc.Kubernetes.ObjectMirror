@@ -6,5 +6,8 @@ namespace Vecc.Kubernetes.ObjectMirror.Models
     {
         [JsonProperty(PropertyName = "allowedNamespaces")]
         public string[]? AllowedNamespaces { get; set; }
+
+        [JsonProperty(PropertyName = "blockedNamespaces")]
+        public string[]? BlockedNamespaces { get; set; }
     }
 }

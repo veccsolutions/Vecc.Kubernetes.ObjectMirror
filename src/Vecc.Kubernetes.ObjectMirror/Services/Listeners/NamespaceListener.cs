@@ -50,14 +50,26 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Listeners
                             _sharedData.KnownNamespaces = knownNamespaces;
                             foreach (var sharedSecret in sharedSecrets)
                             {
-                                foreach (var allowedNamespace in (sharedSecret.Spec?.Target?.AllowedNamespaces ?? Enumerable.Empty<string>()))
+                                var blocked = false;
+                                foreach (var blockedNamespace in (sharedSecret.Spec?.Target?.BlockedNamespaces ?? Enumerable.Empty<string>()))
                                 {
-                                    if (Regex.IsMatch(item.Item?.Metadata?.Name ?? string.Empty, allowedNamespace))
+                                    if (Regex.IsMatch(item.Item?.Metadata?.NamespaceProperty ?? string.Empty, blockedNamespace))
                                     {
-                                        _logger.LogInformation("Syncing secret {@secret} to {@namespace}", $"{sharedSecret.Spec?.Source?.Namespace}/{sharedSecret.Spec?.Source?.Name}", item.Item?.Metadata?.Name);
-                                        _sharedData.NamespacesToSync.Enqueue(new NamespaceToSync(sharedSecret, item.Item?.Metadata?.Name ?? string.Empty));
-                                        _sharedData.ResetEvent.Set();
-                                        break;
+                                        _logger.LogDebug("{@namespace} is blocked for the shared secret {@sharedSecret}", item.Item?.Metadata?.NamespaceProperty, $"{sharedSecret.Spec?.Source?.Namespace}/{sharedSecret.Spec?.Source?.Name}");
+                                        blocked = true;
+                                    }
+                                }
+                                if (!blocked)
+                                {
+                                    foreach (var allowedNamespace in (sharedSecret.Spec?.Target?.AllowedNamespaces ?? Enumerable.Empty<string>()))
+                                    {
+                                        if (Regex.IsMatch(item.Item?.Metadata?.Name ?? string.Empty, allowedNamespace))
+                                        {
+                                            _logger.LogInformation("Syncing secret {@secret} to {@namespace}", $"{sharedSecret.Spec?.Source?.Namespace}/{sharedSecret.Spec?.Source?.Name}", item.Item?.Metadata?.Name);
+                                            _sharedData.NamespacesToSync.Enqueue(new NamespaceToSync(sharedSecret, item.Item?.Metadata?.Name ?? string.Empty));
+                                            _sharedData.ResetEvent.Set();
+                                            break;
+                                        }
                                     }
                                 }
                             }
