@@ -59,4 +59,15 @@ jobs:
         platforms: linux/amd64 #,linux/arm64
         push: false # ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
+    - name: Update deployment.yaml
+      uses: actions/github-script@v5.0.0
+      if: ${{ github.event_name != 'pull_request' }}
+      with:
+        script: |
+          sed -i -r 's@objectmirror:.*@objectmirror:2.2.2@' deployment.yaml
+          git config --global --add user.email edward@frakkingsweet.com
+          git config --global --add user.name GitBot
+          git add -A
+          git commit -m "[Skip] Version bump to ${{ steps.bumper.outputs.new_tag }}"
+          git push origin
         
