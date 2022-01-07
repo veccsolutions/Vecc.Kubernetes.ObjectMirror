@@ -14,7 +14,7 @@ spec:
       serviceAccountName: objectmirror
       containers:
       - name: objectmirror
-        image: quay.io/edward_cooke/objectmirror:0.0.9
+        image: quay.io/edward_cooke/objectmirror:0.0.10
         resources:
           limits:
             memory: "300Mi"
