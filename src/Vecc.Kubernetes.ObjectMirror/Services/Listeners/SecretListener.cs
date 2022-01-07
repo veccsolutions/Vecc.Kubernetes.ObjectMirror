@@ -60,7 +60,12 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Listeners
                                 knownSecrets.Add(secretKey);
                                 _sharedData.KnownSecrets = knownSecrets;
                             }
-                            if (item.EventType == WatchEventType.Deleted && knownSecrets.Contains(secretKey))
+                            else if (item.EventType == WatchEventType.Modified && !knownSecrets.Contains(secretKey))
+                            {
+                                knownSecrets.Add(secretKey);
+                                _sharedData.KnownSecrets = knownSecrets;
+                            }
+                            else if (item.EventType == WatchEventType.Deleted && knownSecrets.Contains(secretKey))
                             {
                                 knownSecrets.Remove(secretKey);
                                 _sharedData.KnownSecrets = knownSecrets;
@@ -81,7 +86,7 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Listeners
                                         continue; //we will just end up throwing errors all over the place if the source secret doesn't exist and we try and sync it.
                                     }
 
-                                    _sharedData.SecretsToSync.Enqueue(new DispatchedEvent<V1beta1SharedSecret> { EventType = item.EventType, Item = sharedSecret, TimeStamp = DateTime.UtcNow });
+                                    _sharedData.SecretsToSync.Enqueue(new DispatchedEvent<V1beta1SharedSecret> { EventType = item.EventType, Item = sharedSecret });
                                     _sharedData.ResetEvent.Set();
 
                                     continue;

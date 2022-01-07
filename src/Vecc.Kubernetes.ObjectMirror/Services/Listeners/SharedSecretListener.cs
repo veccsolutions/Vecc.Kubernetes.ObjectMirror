@@ -45,14 +45,13 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Listeners
                         }
                         else if (item.EventType == WatchEventType.Deleted)
                         {
+                            // all we need to do is remove it from our cache. K8s will handle garbage collection because we set the owner on the created secrets.
                             var currentItem = currentSharedSecrets.FirstOrDefault(x => x.Metadata?.Name == item.Item.Metadata?.Name);
                             if (currentItem != null)
                             {
                                 _logger.LogInformation("Syncing deleted secret {@secret}", $"{item.Item.Spec?.Source?.Namespace}/{item.Item.Spec?.Source?.Name}");
                                 currentSharedSecrets.Remove(currentItem);
                                 _sharedData.SharedSecrets = currentSharedSecrets;
-                                _sharedData.SecretsToSync.Enqueue(item);
-                                _sharedData.ResetEvent.Set();
                             }
                         }
                         else if (item.EventType == WatchEventType.Modified)

@@ -294,6 +294,7 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Mirrors
             if (secret.Metadata == null)
             {
                 _logger.LogError("Source secret metadata is null, this should never happen. Not doing anything.");
+                return;
             }
 
             try

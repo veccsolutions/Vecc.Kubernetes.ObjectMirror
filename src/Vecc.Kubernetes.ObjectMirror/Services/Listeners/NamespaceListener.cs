@@ -53,7 +53,7 @@ namespace Vecc.Kubernetes.ObjectMirror.Services.Listeners
                                 var blocked = false;
                                 foreach (var blockedNamespace in (sharedSecret.Spec?.Target?.BlockedNamespaces ?? Enumerable.Empty<string>()))
                                 {
-                                    if (Regex.IsMatch(item.Item?.Metadata?.NamespaceProperty ?? string.Empty, blockedNamespace))
+                                    if (Regex.IsMatch(item.Item?.Metadata?.Name ?? string.Empty, blockedNamespace))
                                     {
                                         _logger.LogDebug("{@namespace} is blocked for the shared secret {@sharedSecret}", item.Item?.Metadata?.NamespaceProperty, $"{sharedSecret.Spec?.Source?.Namespace}/{sharedSecret.Spec?.Source?.Name}");
                                         blocked = true;

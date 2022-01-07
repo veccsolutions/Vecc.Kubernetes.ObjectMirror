@@ -10,6 +10,8 @@ namespace Vecc.Kubernetes.ObjectMirror.Services
         private readonly ConcurrentQueue<DispatchedEvent<T>> _queue;
         private readonly AutoResetEvent _waiter;
 
+        public int QueueCount { get => _queue.Count; }
+
         public Dispatcher()
         {
             _queue = new ConcurrentQueue<DispatchedEvent<T>>();
@@ -22,7 +24,6 @@ namespace Vecc.Kubernetes.ObjectMirror.Services
             {
                 Item = item,
                 EventType = watchEvent,
-                TimeStamp = DateTime.UtcNow
             });
             _waiter.Set();
         }

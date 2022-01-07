@@ -7,6 +7,5 @@ namespace Vecc.Kubernetes.ObjectMirror.Models
     {
         public WatchEventType EventType { get; set; }
         public T? Item { get; set; }
-        public DateTime TimeStamp { get; set; }
     }
 }
