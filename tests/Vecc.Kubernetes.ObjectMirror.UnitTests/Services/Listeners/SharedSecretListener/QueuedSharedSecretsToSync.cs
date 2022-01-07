@@ -49,7 +49,7 @@ namespace Vecc.Kubernetes.ObjectMirror.UnitTests.Services.Listeners.SharedSecret
 
             var listener = new L.SharedSecretListener(logger.Object, dispatcher, sharedData);
             await listener.StartAsync(CancellationToken.None);
-            Exception exception = null;
+            Exception? exception = null;
             var runner = new Task(async () =>
             {
                 try
